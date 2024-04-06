@@ -44,7 +44,7 @@ This `curl` command sends a PUT request to update a specific task with the new t
 
 This `curl` command sends a DELETE request to delete a specific task by its ID.
 
- Replace `{task_id}` with the actual ID of the task you want to interact with when testing the specific endpoints.
+Replace `{task_id}` with the actual ID of the task you want to interact with when testing the specific endpoints.
 
 
 # Future updates
