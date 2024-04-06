@@ -1,6 +1,7 @@
 import falcon
 from models import Task, TaskSchema
 import json
+from ai . foundation import LMMistral
 
 task_schema = TaskSchema()
 
@@ -10,6 +11,7 @@ class TaskCollectionResource:
         tasks = [
             Task(id=1, title='Task 1', description='Description for Task 1', status='done'),
             Task(id=2, title='Task 2', description='Description for Task 2'),
+            Task(id=3, title='Task 3', description='Description for Task 3'),
         ]
         # Serialize tasks using TaskSchema
         tasks_data = task_schema.dump(tasks, many=True)
@@ -30,8 +32,10 @@ class TaskResource:
         # Get task by ID (e.g., from a database)
         task = Task(id=task_id, title=f'Task {task_id}', description=f'Description for Task {task_id}')
         # Check if task exists
+        ai_suggestion = Ai._ai()
+
         if task:
-            resp.body = task_schema.dumps(task)
+            resp.body = task_schema.dumps(task, ai_suggestion)
             resp.status = falcon.HTTP_200
         else:
             resp.status = falcon.HTTP_404
@@ -49,3 +53,40 @@ class TaskResource:
         # Delete task by ID (e.g., from a database)
         # Set response status code
         resp.status = falcon.HTTP_204
+
+
+class AiModel:
+
+    def __init__(self):
+        pass
+
+
+    def _generate_bot_response(self, prompt, task_id, title, description):
+        
+        self.mistral_instance = LMMistral()
+
+        self.task_id = TaskCollectionResource.id
+        self.title = TaskCollectionResource.title
+        self.description = TaskCollectionResource.description
+
+        try:
+            prompt = f"""<s>[INST]Based on the following task, can you give the user tips and recommendations to finish them well?. 
+            Task ID: {task_id}, Title: {title}, and Description: {description}            
+            [/INST]"""
+            
+            result = self.mistral_instance.pipe(prompt)
+
+            return result[0]['generated_text']
+        except Exception as e:
+            print(f"Error in inference: {e}")
+
+            return None
+
+    def fitness_ai(self, prompt):
+        return self._generate_bot_response(prompt, 'FitMateBot')
+
+class Ai:
+    def _ai():
+        result = AiModel._generate_bot_response()
+
+        return result
