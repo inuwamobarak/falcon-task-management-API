@@ -1,3 +1,4 @@
 falcon
 gunicorn
 marshmallow
+git+https://github.com/huggingface/transformers.git
